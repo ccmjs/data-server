@@ -1,6 +1,6 @@
 /**
  * @overview NodeJS webserver for server-side ccm data management via HTTP using MongoDB
- * @author André Kless <andre.kless@web.de>, 2018
+ * @author André Kless <andre.kless@web.de> 2018
  * @license MIT License
  */
 
