@@ -1,6 +1,6 @@
 /**
  * @overview NodeJS webserver for server-side ccm data management via HTTP using MongoDB
- * @author André Kless <andre.kless@web.de> 2018
+ * @author André Kless <andre.kless@web.de> 2018-2019
  * @license MIT License
  */
 
@@ -50,6 +50,15 @@ connectMongoDB( () => { if ( !mongodb ) console.log( 'No MongoDB found => Server
    * @param response
    */
   function handleRequest( request, response ) {
+
+    // handle 'OPTION' requests
+    if ( request.method === 'OPTIONS' ) {
+      response.setHeader( 'Access-Control-Allow-Origin', '*' );
+      response.setHeader( 'Access-Control-Allow-Headers', 'Content-Type' );
+      response.statusCode = 200;
+      response.end();
+      return;
+    }
 
     // receive HTTP parameter data
     if ( request.method === 'POST' ) {
