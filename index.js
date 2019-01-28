@@ -11,7 +11,11 @@ const configs = {
       port: 8080
     },
     domain: 'localhost',
-    max_data_size: 16777216
+    max_data_size: 16777216,
+    mongo: {
+      uri: "mongodb://localhost",
+      port: "27017"
+    }
   }
 };
 
@@ -25,7 +29,7 @@ const deparam   = require( 'node-jquery-deparam' );
 const moment    = require( 'moment' );
 
 // create connection to MongoDB
-connectMongoDB( () => { if ( !mongodb ) console.log( 'No MongoDB found => Server runs without MongoDB.' );
+connectMongoDB( () => { if ( !mongodb || !config.mongo ) console.log( 'No MongoDB found => Server runs without MongoDB.' );
 
   // start webserver
   startWebserver();
@@ -397,8 +401,8 @@ connectMongoDB( () => { if ( !mongodb ) console.log( 'No MongoDB found => Server
  * @param {boolean} waited
  */
 function connectMongoDB( callback, waited ) {
-  if ( !mongodb ) return callback();
-  mongodb.MongoClient.connect( 'mongodb://localhost:27017', { useNewUrlParser: true }, ( err, client ) => {
+  if ( !mongodb || !config.mongo ) return callback();
+  mongodb.MongoClient.connect( `${config.mongo.uri}:${config.mongo.port}`, { useNewUrlParser: true }, ( err, client ) => {
     if ( !err ) { mongodb = client.db( 'ccm' ); return callback(); }
     if ( !waited ) setTimeout( () => connectMongoDB( callback, true ), 3000 );
     else { mongodb = null; callback(); }
