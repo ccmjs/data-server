@@ -217,13 +217,13 @@ connectMongoDB( () => { if ( !mongodb ) console.log( 'No MongoDB found => Server
 
               // update dataset
               if ( Object.keys( unset_data ).length > 0 )
-                collection.update( { _id: priodata._id }, { $set: priodata, $unset: unset_data }, success );
+                collection.updateOne( { _id: priodata._id }, { $set: priodata, $unset: unset_data }, success );
               else
-                collection.update( { _id: priodata._id }, { $set: priodata }, success );
+                collection.updateOne( { _id: priodata._id }, { $set: priodata }, success );
 
             }
             // create operation => add 'created_at' timestamp and perform create operation
-            else { priodata.created_at = priodata.updated_at; collection.insert( priodata, success ); }
+            else { priodata.created_at = priodata.updated_at; collection.insertOne( priodata, success ); }
 
             /** when dataset is created/updated */
             function success() {
@@ -244,7 +244,7 @@ connectMongoDB( () => { if ( !mongodb ) console.log( 'No MongoDB found => Server
           getDataset( data.del, existing_dataset => {
 
             // delete dataset and perform callback with deleted dataset
-            collection.remove( { _id: convertKey( data.del ) }, () => finish( existing_dataset ) );
+            collection.deleteOne( { _id: convertKey( data.del ) }, () => finish( existing_dataset ) );
 
           } );
 
@@ -398,7 +398,7 @@ connectMongoDB( () => { if ( !mongodb ) console.log( 'No MongoDB found => Server
  */
 function connectMongoDB( callback, waited ) {
   if ( !mongodb ) return callback();
-  mongodb.MongoClient.connect( 'mongodb://localhost:27017', ( err, client ) => {
+  mongodb.MongoClient.connect( 'mongodb://localhost:27017', { useNewUrlParser: true }, ( err, client ) => {
     if ( !err ) { mongodb = client.db( 'ccm' ); return callback(); }
     if ( !waited ) setTimeout( () => connectMongoDB( callback, true ), 3000 );
     else { mongodb = null; callback(); }
