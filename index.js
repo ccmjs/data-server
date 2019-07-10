@@ -12,6 +12,7 @@ const configs = {
     },
     domain: 'localhost',
     max_data_size: 16777216,
+    db: 'ccm',
     mongo: {
       uri: "mongodb://localhost",
       port: "27017"
@@ -227,7 +228,10 @@ connectMongoDB( () => { if ( !mongodb || !config.mongo ) console.log( 'No MongoD
 
             }
             // create operation => add 'created_at' timestamp and perform create operation
-            else { priodata.created_at = priodata.updated_at; collection.insertOne( priodata, success ); }
+            else {
+              priodata.created_at = priodata.updated_at;
+              collection.insertOne( priodata, success );
+            }
 
             /** when dataset is created/updated */
             function success() {
@@ -263,6 +267,9 @@ connectMongoDB( () => { if ( !mongodb || !config.mongo ) console.log( 'No MongoD
 
           // read dataset(s)
           collection.find( isObject( key_or_query ) ? key_or_query : { _id: convertKey( key_or_query ) } ).toArray( ( err, res ) => {
+
+            // when result is null
+            if ( !res ) return callback( res );
 
             // convert MongoDB dataset(s) in ccm dataset(s)
             for ( let i = 0; i < res.length; i++ )
@@ -402,8 +409,8 @@ connectMongoDB( () => { if ( !mongodb || !config.mongo ) console.log( 'No MongoD
  */
 function connectMongoDB( callback, waited ) {
   if ( !mongodb || !config.mongo ) return callback();
-  mongodb.MongoClient.connect( `${config.mongo.uri}:${config.mongo.port}`, { useNewUrlParser: true }, ( err, client ) => {
-    if ( !err ) { mongodb = client.db( 'ccm' ); return callback(); }
+  mongodb.MongoClient.connect( config.mongo.uri, { useNewUrlParser: true }, ( err, client ) => {
+    if ( !err ) { mongodb = client.db( config.db ); return callback(); }
     if ( !waited ) setTimeout( () => connectMongoDB( callback, true ), 3000 );
     else { mongodb = null; callback(); }
   } );
