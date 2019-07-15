@@ -5,20 +5,7 @@
  */
 
 // webserver configurations
-const configs = {
-  local: {
-    http: {
-      port: 8080
-    },
-    domain: 'localhost',
-    max_data_size: 16777216,
-    db: 'ccm',
-    mongo: {
-      uri: "mongodb://localhost",
-      port: "27017"
-    }
-  }
-};
+const configs = require (`${__dirname}/configs.json`);
 
 // used webserver configuration
 const config = configs.local;
@@ -409,8 +396,8 @@ connectMongoDB( () => { if ( !mongodb || !config.mongo ) console.log( 'No MongoD
  */
 function connectMongoDB( callback, waited ) {
   if ( !mongodb || !config.mongo ) return callback();
-  mongodb.MongoClient.connect( config.mongo.uri, { useNewUrlParser: true }, ( err, client ) => {
-    if ( !err ) { mongodb = client.db( config.db ); return callback(); }
+  mongodb.MongoClient.connect( `mongodb://${config.mongo.host}:${config.mongo.port}`, { useNewUrlParser: true }, ( err, client ) => {
+    if ( !err ) { mongodb = client.db( config.mongo.db ); return callback(); }
     if ( !waited ) setTimeout( () => connectMongoDB( callback, true ), 3000 );
     else { mongodb = null; callback(); }
   } );
