@@ -6,7 +6,7 @@
     "domain": "localhost",
     "max_data_size": 16777216,
     "mongo": {
-      "host": "172.22.0.100",
+      "host": "localhost",
       "port": 27017,
       "user": "root",
       "password": "",

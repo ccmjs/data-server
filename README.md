@@ -28,5 +28,5 @@ See Wiki page for more informations.
         --restart   unless-stopped  \
         --name      data-server     \
         --publish   8080:8080       \
-        hbrs/data-server
+        <name>>/data-server
         
